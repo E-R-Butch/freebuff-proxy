@@ -75,7 +75,7 @@ export async function runStreamingRpc(
     ...rpcArgs,
     onStatus: (s: number) => signalOnce({ kind: 'status', status: s }),
     onLine: (line: string) => {
-      if (pipeBroken || !line) return
+      if (pipeBroken) return
       void writer.write(encoder.encode(line + '\n')).catch(() => { pipeBroken = true })
     },
   }).then(

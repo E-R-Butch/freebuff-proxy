@@ -145,7 +145,7 @@ export function callBunStream(input: any, opts: any) {
       }
       return;
     }
-    if (line) onLine(line);
+    onLine(line);
   };
 
   child.stdout.on('data', (d: any) => {

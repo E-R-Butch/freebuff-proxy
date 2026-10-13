@@ -118,13 +118,16 @@ function rpcReuseStreaming(payload: any, opts: any): Promise<any> {
         onLine(line)
       },
       onSummary: (out: any) => {
+        const finalStatus = out?.chat?.status ?? status
         resolve({
-          ok: (out?.chat?.status ?? status) === 200,
-          status: out?.chat?.status ?? status,
+          ok: finalStatus === 200,
+          status: finalStatus,
           runId: out?.startRun?.runId || null,
           model: out?.model ?? null,
           error: out?.error ?? null,
-          text: '',
+          // 非 200 的正文由汇总交付, 200 的正文由 onLine 交付.
+          // .agents/notes/implemented/bug-fix/2026-10-13-streaming-rpc-error-body.md
+          text: finalStatus === 200 ? '' : (out?.chat?.text ?? ''),
           streamed: true,
         })
       },

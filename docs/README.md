@@ -1,6 +1,6 @@
 # 文档索引与真源声明
 
-> 最后核对: 2026-10-05 . 对应代码: 94902a4
+> 最后核对: 2026-10-13 . 对应代码: 2.11.2 working tree
 > 这个文件是**文档的入口**:回答"某个主题该看哪个文件",并声明**每份文档的唯一真源地位**.
 > 它由门禁 `scripts/gates/checks/doc/check-docs.ts` 对账(端点 / 路径引用 / 真源唯一性 / 索引链接与反向覆盖).
 
@@ -49,6 +49,7 @@ docs/
 
 | 想知道 | 看这个 | 主题 key |
 |---|---|---|
+| 流式 RPC 错误正文契约 | [错误正文](design/streaming-rpc-error-body.md) | `streaming-rpc-error-body` |
 | 多账号池调度 / 额度口径 / 额度保护 | [design/scheduling.md](design/scheduling.md) | `scheduling` |
 | 调度与归还点数的**调研过程与纠错史** | [design/account-scheduling-and-refund.md](design/account-scheduling-and-refund.md) | `scheduling-research` |
 | 下游 Agent 接入与全部本仓路由 | [design/api.md](design/api.md) | `api` |
