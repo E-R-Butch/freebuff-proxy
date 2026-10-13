@@ -82,6 +82,13 @@ import path from 'node:path'
     String(chatCall.headers.Authorization || chatCall.headers.authorization || '').startsWith('Bearer '),
     'chat 必须带 Bearer Authorization',
   )
+  // 官方每次 chat 都声明该能力; 缺它上游按旧 build 回 410. 见
+  // .agents/notes/implemented/bug-fix/2026-10-13-caller-version-header.md
+  assert.equal(
+    chatCall.headers['x-freebuff-sse-gzip-recovery'],
+    '1',
+    'chat 必须声明 SSE gzip 恢复能力',
+  )
   const admitCall = state.calls.find((c) => c.url.includes('/api/v1/freebuff/session') && c.method === 'POST')
   assert.ok(admitCall, '应发出准入请求')
   assert.ok(
@@ -89,7 +96,9 @@ import path from 'node:path'
     'POST 准入端点应为 .../session/admission, got ' + admitCall.url,
   )
   assert.equal(admitCall.headers['x-freebuff-model'], 'deepseek/deepseek-v4-flash')
-  assert.equal(admitCall.headers['x-freebuff-wallet-spend-limit'], '0')
+  // 当前官方客户端 admission 发字符串 'session', 见
+  // .agents/notes/implemented/bug-fix/2026-10-13-session-wallet-spend-limit.md
+  assert.equal(admitCall.headers['x-freebuff-wallet-spend-limit'], 'session')
   assert.equal(admitCall.headers['x-freebuff-first-tab-discount'], '0')
   assert.ok(admitCall.headers['x-fb-timezone'], '准入请求应带本机时区')
   /**

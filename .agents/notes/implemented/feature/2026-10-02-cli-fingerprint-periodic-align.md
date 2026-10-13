@@ -6,27 +6,24 @@ Status: implemented
 
 ## Problem
 
-CLI 指纹版本号(chat UA 里的 `ai-sdk/openai-compatible/<v>/codebuff`)随官方发版变化.
-`refreshCliVersion()` 已存在,但只在**启动时调用一次** —— 长跑进程(Docker 常驻数天)
-会一直用启动那一刻的版本.若官方发版,我们的 UA 版本落后,本身就是可被上游用来
-区分"真客户端 / 第三方"的指纹面.
-
-同时:版本变化是静默的.即使刷新成功,运维也只能翻日志比对,看不出"该跟进官方了".
+A long-running process needs an explicit way to inspect current CLI release metadata.
+The previous setting was absent from stored settings and its scheduler only observed startup.
+The version string was never wired to the actual chat UA.
 
 ## Decision
 
-保留启动时的首次对齐,**追加一个 6 小时周期刷新**,并在版本实际变化时 `warn` 一条
-`cli fingerprint version changed upstream; realigned`(带 from / to).
+Use the optional, default-disabled runtime metadata check described in
+[the current note](2026-10-13-cli-version-refresh.md). Enabling checks npm once and arms a
+six-hour timer; disabling aborts the check and clears the timer. Stored settings and
+live transitions use the same field validation.
 
-定时器 `unref()`:绝不挡进程退出.
-刷新失败静默保留现值(best-effort,与既有语义一致).
+The value is release information. It does not install a client binary or change SDK
+request headers. Session caller version reporting is independent.
 
 ## Consequences
 
-- 长跑进程的版本号自动跟随 npm `freebuff` 最新版,无需重启.
-- 版本变化在日志里是显式 `warn`,可被 grep / 告警管道接走.
-- 6h 一次,单次 8s 超时,失败静默 —— 对上游与本地可用性均无额外负担.
-- 版本号只影响 UA 形态,不影响设备签名(签名与 CLI 版本无关).
+No registry call occurs by default. Enabled checks keep the last valid cache on failure.
+Real upstream compatibility requires separate verification.
 
 ## Alternatives considered
 

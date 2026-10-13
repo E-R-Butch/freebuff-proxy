@@ -3,6 +3,7 @@
  - 纯函数(不碰 this), 除 buildMetadata 需要 bridge 取 run 状态与项目目录.
  */
 import { collectRepoSnapshot } from '../snapshot.ts'
+import { H_SSE_GZIP_RECOVERY } from '../../../src/upstream/upstream-contract.ts'
 import { applyPlaceholders, renderManagerSystem, renderWorkerSystem } from '../system.ts'
 import { MAP_TOOLS, mergeOfficialTools } from '../tool-map.ts'
 
@@ -181,6 +182,10 @@ export async function buildHeaders(bridge, url, body) {
       'ai-sdk/openai-compatible/0.0.0-test/codebuff ai-sdk/provider-utils/3.0.25 runtime/bun/1.4.2',
     'x-freebuff-acting-user-id': bridge.cfg.userId,
     'x-freebuff-catalog-fetch': bridge.fid,
+    // 官方 chat 不带调用方版本头(只有 session 带), 所以这里不发.
+    // 官方每次 chat 都声明本能力; 缺它上游按旧 build 处理.
+    // .agents/notes/implemented/bug-fix/2026-10-13-caller-version-header.md
+    [H_SSE_GZIP_RECOVERY]: '1',
     ...(await bridge.signHeaders('POST', url, body, bridge.fid)),
   };
 }

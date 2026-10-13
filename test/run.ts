@@ -38,6 +38,7 @@ const SUITES = [
   ['system-prompt-dynamic', 'suites/entries/verify/system-prompt-dynamic.ts'],
   ['config-passthrough', 'suites/entries/verify/config-passthrough.ts'],
   ['rpc-error-body', 'suites/entries/verify/protocol/rpc-error-body.ts'],
+  ['multi-session', 'suites/entries/verify/protocol/multi-session.ts'],
   ['reasoning-override', 'suites/entries/verify/effort/reasoning-override.ts'],
   ['official-template', 'suites/entries/verify/system/official-template.ts'],
   ['signin', 'suites/entries/verify/signin.ts'],

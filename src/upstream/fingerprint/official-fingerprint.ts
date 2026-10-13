@@ -11,8 +11,7 @@
  *   strings -n 6 freebuff
  * 提取到的原文锚点见各项注释.
  *
- * 保鲜期:这些值随官方 CLI 发版变化.版本号优先由调用方传入(从 npm 对齐的最新
- * 版本), 拿不到才回落本文件写死的已知值.
+ * SDK UA, npm CLI 版本信息与当前调用方的会话版本观测头分别维护.
  *
  * 纯设备指纹常量与函数在 fingerprint/**: ua.ts / instance-id.ts / client-env.ts /
  * cli-version.ts. 这里原样 re-export 以保持既有 import 点不变; 本文件只保留头部
@@ -25,6 +24,8 @@ export * from './client-env.ts'
 export * from './cli-version.ts'
 
 import { officialChatUserAgent } from './ua.ts'
+import { callerVersionHeaders } from './cli-version.ts'
+import { H_SSE_GZIP_RECOVERY } from '../upstream-contract.ts'
 import {
   CLI_CLAIM_PREFIX,
   HEADER_DESKTOP_ATTEMPT_ID,
@@ -102,13 +103,14 @@ export function localTimeZone() {
  *
  * @param {'GET'|'POST'|'DELETE'} method
  * @param {string} token
- * @param {{ model?: string, instanceId?: string, compact?: boolean, walletSpendLimit?: number, firstTabDiscount?: boolean }} [opts]
+ * @param {{ model?: string, instanceId?: string, compact?: boolean, walletSpendLimit?: string, firstTabDiscount?: boolean }} [opts]
  * @returns {Record<string, string>}
  */
 export function officialSessionHeaders(method: any, token: any, opts: any = {}) {
   /** @type {Record<string, string>} */
   const headers: any = {
     Authorization: 'Bearer ' + token,
+    ...callerVersionHeaders(),
     [HEADER_FIRST_TAB_DISCOUNT]: opts.firstTabDiscount ? '1' : '0',
     // 客户端环境描述符：官方在 session 与广告请求上都带（见
     // cli/src/utils/client-environment.ts）。缺它就不像官方客户端。
@@ -153,7 +155,8 @@ export function officialSessionHeaders(method: any, token: any, opts: any = {}) 
   //  不再发 x-freebuff-compact-session:desktop 客户端 0 次.
   if (method === 'POST') {
     if (opts.model) headers[HEADER_MODEL] = opts.model
-    headers[HEADER_WALLET_SPEND_LIMIT] = String(opts.walletSpendLimit ?? 0)
+    // 见 .agents/notes/implemented/bug-fix/2026-10-13-session-wallet-spend-limit.md
+    headers[HEADER_WALLET_SPEND_LIMIT] = String(opts.walletSpendLimit ?? 'session')
     // 显式接管:只在调用方拿到 currentInstanceId 时带, 未拿到时保持官方默认形态
     if (opts.takeoverInstanceId) {
       headers[HEADER_TAKEOVER_INSTANCE_ID] = String(opts.takeoverInstanceId)
@@ -185,6 +188,9 @@ export function officialChatHeaders(token: any, opts: any = {}) {
   const headers: any = {
     Authorization: 'Bearer ' + token,
     'user-agent': officialChatUserAgent(opts.version),
+    // 官方每次 chat 都声明本能力; 缺它上游按旧 build 处理(410).
+    // .agents/notes/implemented/bug-fix/2026-10-13-caller-version-header.md
+    [H_SSE_GZIP_RECOVERY]: '1',
   }
   if (opts.userId) headers[HEADER_ACTING_USER_ID] = opts.userId
   return headers

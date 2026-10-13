@@ -5,12 +5,14 @@
  */
 
 /**
- * 已知的官方 CLI 版本(提取自 freebuff@0.0.178 二进制):
- *   CODEBUFF_CLI_VERSION:"0.0.178"
- * 仅作离线兜底;在线时优先用 npm 上 freebuff 包的最新版本.
- * 见 .agents/notes/implemented/bug-fix/2026-09-18-official-cli-fingerprint.md
+ * 已知的官方客户端版本 -- 版本信息缓存的离线初始值.
+ *
+ * 取值核对自官方发布包: 包内常量 CODEBUFF_CLI_VERSION 与下载路径
+ * (/api/releases/download/<v>/...) 一致, 且 npm registry 的
+ * freebuff@latest 同版. 该值随官方发版变化, 由 refreshCliVersion 更新.
+ * 见 .agents/notes/implemented/bug-fix/2026-10-13-caller-version-header.md
  */
-export const KNOWN_CLI_VERSION = '0.0.178'
+export const KNOWN_CLI_VERSION = '0.2.27'
 
 /**
  * 官方 chat/completions 的 UA 版本段 ---- 两段式, 逐字对齐真机抓包:

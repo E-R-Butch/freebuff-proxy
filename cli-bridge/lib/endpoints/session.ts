@@ -4,6 +4,7 @@
  */
 import { dumpReq } from '../wire/dump.ts'
 import { devicePayload } from '../wire/crypto.ts'
+import { callerVersionHeaders } from '../../../src/upstream/fingerprint/cli-version.ts'
 
 /**
  - admission: x-freebuff-model 必须传 handle(fbm1.xxx), 不是 key.
@@ -30,13 +31,16 @@ export async function admit(bridge, row, opts = {}) {
   for (let i = 0; i <= retries; i++) {
     const hdrs = {
         ...bridge.auth(),
+        ...callerVersionHeaders(),
         'x-freebuff-catalog-protocol': '1',
         'x-freebuff-catalog-fetch': bridge.fid,
         'x-freebuff-client': 'desktop',
         //  不要发字面量 'null':主服务没传 installId 时整个头应省略
       ...(bridge.cfg.installId ? { 'x-freebuff-install-id': bridge.cfg.installId } : {}),
         'x-freebuff-model': row.handle,
-        'x-freebuff-wallet-spend-limit': '0',
+        // 当前官方客户端 POST admission 发的是字符串 'session', 不是 0.
+        // .agents/notes/implemented/bug-fix/2026-10-13-session-wallet-spend-limit.md
+        'x-freebuff-wallet-spend-limit': 'session',
         'x-freebuff-first-tab-discount': '0',
         'x-fb-timezone': bridge.cfg.timeZone
           || (Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'),

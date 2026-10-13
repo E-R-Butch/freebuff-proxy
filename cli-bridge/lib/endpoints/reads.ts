@@ -3,6 +3,7 @@
  - 每个函数第一个参数是 bridge 实例; 原方法体里的 this 已逐字改为 bridge.
  */
 import { dumpReq } from '../wire/dump.ts'
+import { callerVersionHeaders } from '../../../src/upstream/fingerprint/cli-version.ts'
 import { b64u, sha256Hex, derFromB64u, devicePayload } from '../wire/crypto.ts'
 
 /**
@@ -87,6 +88,7 @@ export async function getSession(bridge, opts = {}) {
   const res = await bridge.egressFetch(url, {
     headers: {
       ...bridge.auth(),
+      ...callerVersionHeaders(),
       'x-freebuff-catalog-protocol': '1',
       ...(bridge.fid ? { 'x-freebuff-catalog-fetch': bridge.fid } : {}),
       'x-freebuff-client': 'desktop',
@@ -137,6 +139,7 @@ export async function getStreak(bridge) {
   const res = await bridge.egressFetch(url, {
     headers: {
       ...bridge.auth(),
+      ...callerVersionHeaders(),
       'x-freebuff-catalog-protocol': '1',
       ...(bridge.fid ? { 'x-freebuff-catalog-fetch': bridge.fid } : {}),
       'x-freebuff-client': 'desktop',
@@ -163,6 +166,7 @@ export async function release(bridge, instanceId) {
     method: 'DELETE',
     headers: {
       ...bridge.auth(),
+      ...callerVersionHeaders(),
       'x-freebuff-catalog-protocol': '1',
       ...(bridge.fid ? { 'x-freebuff-catalog-fetch': bridge.fid } : {}),
       'x-freebuff-instance-id': instanceId,

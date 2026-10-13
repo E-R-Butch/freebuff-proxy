@@ -70,6 +70,10 @@ export const H_TIMEZONE = 'x-fb-timezone'
 export const H_CATALOG_PROTOCOL = 'x-freebuff-catalog-protocol'
 export const H_CATALOG_FETCH = 'x-freebuff-catalog-fetch'
 export const H_CLIENT = 'x-freebuff-client'
+/** chat 的 SSE gzip 恢复能力声明头(官方每次 chat 都带). */
+export const H_SSE_GZIP_RECOVERY = 'x-freebuff-sse-gzip-recovery'
+/** 会话请求的调用方版本(官方由 CODEBUFF_CLI_VERSION 填). */
+export const H_CLIENT_VERSION = 'x-freebuff-client-version'
 export const H_INSTALL_ID = 'x-freebuff-install-id'
 export const H_INSTANCE_ID = 'x-freebuff-instance-id'
 export const H_MODEL = 'x-freebuff-model'
@@ -94,6 +98,8 @@ export const BUSINESS_HEADERS = [
   H_CATALOG_PROTOCOL,
   H_CATALOG_FETCH,
   H_CLIENT,
+  H_CLIENT_VERSION,
+  H_SSE_GZIP_RECOVERY,
   H_INSTALL_ID,
   H_INSTANCE_ID,
   H_MODEL,

@@ -71,6 +71,9 @@ function applyOutboundMetadata(body: any, ids: any) {
     body.codebuff_metadata && typeof body.codebuff_metadata === 'object'
       ? { ...body.codebuff_metadata }
       : {}
+  delete existingMeta.freebuff_multi_session
+  delete existingMeta.surface
+  const hasInstance = typeof ids.instanceId === 'string' && ids.instanceId.trim().length > 0
   body.codebuff_metadata = {
     ...existingMeta,
     run_id: ids.runId,
@@ -80,11 +83,10 @@ function applyOutboundMetadata(body: any, ids: any) {
     // 客户端环境描述符:官方把它放进 codebuff_metadata(与 x-freebuff-env 头
     // 同一份字符串).缺失 = 请求形态不像官方 CLI, 上游会据此判定第三方客户端.
     [META_CLIENT_ENV]: clientEnvironment(),
-    // 官方在 CLI claim(cli: 前缀)时额外声明这两项. surface: 'cli' 就是服务端
-    // 用来区分 native CLI 与 Desktop 标签的字段.
-    ...(isCliClaim(ids.instanceId)
-      ? { freebuff_multi_session: '1', surface: 'cli' }
-      : {}),
+    // 会话协议标记与客户端 surface 分别装配.
+    // .agents/notes/implemented/bug-fix/2026-10-13-chat-multi-session-metadata.md
+    ...(hasInstance ? { freebuff_multi_session: '1' } : {}),
+    ...(hasInstance && isCliClaim(ids.instanceId) ? { surface: 'cli' } : {}),
     ...(existingMeta.trace_session_id ? {} : { trace_session_id: randomUUID() }),
     // 官方 chat metadata 的另三个字段(抓包确认存在):
     // freebuff_input_profile / repo_snapshot / llm_step_number.
