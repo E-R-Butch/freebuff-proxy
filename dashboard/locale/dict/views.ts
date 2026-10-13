@@ -150,6 +150,16 @@ export default {
     'zh-CN': '自动签到可在[设置 → 调度与额度]里开启（默认关闭，间隔 25 小时）',
     en: 'Enable auto sign-in in Settings (off by default, every 25 hours)',
   },
+  'settings.cliVersionRefresh': { 'zh-CN': '自动检查 CLI 版本', en: 'Auto-check the CLI version' },
+  'settings.cliVersionRefreshHint': {
+    'zh-CN':
+      '默认关闭。开启后立即查一次 npm，此后每 6 小时检查一次，无需重启。'
+      + '该版本号会作为调用方版本上报给上游；不安装客户端，不发送模型请求。',
+    en:
+      'Off by default. Checks npm once on enable, then every 6 hours; applies live. '
+      + 'The version is reported to the upstream as the caller version. '
+      + 'Installs no client and sends no model request.',
+  },
   'settings.autoSignIn': { 'zh-CN': '自动签到', en: 'Auto sign-in' },
   'settings.autoSignInHint': {
     'zh-CN':

@@ -50,6 +50,7 @@ docs/
 | 想知道 | 看这个 | 主题 key |
 |---|---|---|
 | chat 与 session 的多会话标记 | [多会话协议](design/chat-multi-session-metadata.md) | `chat-multi-session-metadata` |
+| 可选 CLI 版本信息检查 | [版本信息检查](design/cli-version-refresh.md) | `cli-version-refresh` |
 | 流式 RPC 错误正文契约 | [错误正文](design/streaming-rpc-error-body.md) | `streaming-rpc-error-body` |
 | 多账号池调度 / 额度口径 / 额度保护 | [design/scheduling.md](design/scheduling.md) | `scheduling` |
 | 调度与归还点数的**调研过程与纠错史** | [design/account-scheduling-and-refund.md](design/account-scheduling-and-refund.md) | `scheduling-research` |

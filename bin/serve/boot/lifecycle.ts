@@ -34,6 +34,7 @@ export function createLifecycle({ getServer, loginFlows, ctx }: ShutdownDeps) {
    */
   const shutdown = async (signal: any) => {
     logger.info('shutting down', { signal })
+    ctx.stopCliVersionRefresh?.()
     loginFlows.shutdown()
     try {
       // strict:等到每条上游会话真的 DELETE 掉(或退避重试耗尽)再退出.

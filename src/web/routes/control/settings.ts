@@ -51,6 +51,7 @@ const FIELDS: FieldSpec[] = [
     (v: any) => Number.isInteger(v) && v >= 0 && v <= 16,
   ],
   ['cliTelemetryEnabled', 'cliTelemetryEnabled 必须是布尔值', (v: any) => typeof v === 'boolean'],
+  ['cliVersionAutoRefresh', 'cliVersionAutoRefresh 必须是布尔值', (v: any) => typeof v === 'boolean'],
   // 官方工具注入名单: 空数组合法(一个都不注入), 所以只判元素类型不判长度.
   [
     'officialToolNames',

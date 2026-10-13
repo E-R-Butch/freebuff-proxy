@@ -124,6 +124,7 @@ export function readSettings(config: any, settingsStore: any, ctx?: any) {
     lowBalanceThreshold: s.lowBalanceThreshold ?? 15,
     // 遥测上报开关:官方 CLI 会发 app_launched 等生命周期事件,我们默认不发.
     cliTelemetryEnabled: s.cliTelemetryEnabled === true,
+    cliVersionAutoRefresh: s.cliVersionAutoRefresh === true,
     // 上游请求形态通道('legacy' 默认 / 'official' 照抄官方抓包).
     upstreamChannel: s.upstreamChannel === 'official' ? 'official' : 'legacy',
     // 官方工具注入: null = 未配置(全注入), 数组(含空) = 控制台配过的名单.

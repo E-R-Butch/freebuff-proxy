@@ -1,77 +1,31 @@
 /**
- * 上游相关的启动工作 -- 从 bin/serve.ts 按职责切出.
- *
- *
- * 口径: 纯搬移 + 按职责抽子函数, 不改任何时序与判据.
+ * 上游相关的启动工作与版本信息调度接线.
  */
-import { getCliVersion, refreshCliVersion } from '../../../src/upstream/fingerprint/official-fingerprint.ts'
+import { startCliVersionRefresh } from './version-refresh/index.ts'
 import { reportCliLaunch } from '../../../src/upstream/telemetry/cli-telemetry.ts'
 import { logger } from '../../../src/util/log.ts'
 
 /**
- * CLI 版本对齐(默认不动).
- *
- * 启动时的 npm 版本拉取已停用(零自动探测, docs/reverse/20 §20.3):它会在每次
- * 启动自动打 registry.npmjs.org,属于"我们不请自来的外部请求".
- * CLI 版本号用仓库内的已知值(getCliVersion() 的默认值);
- * 要跟进官方发版由维护者显式触发, 或打开设置里的开关(见下). 功能保留, 默认不动.
+ * 启动可实时切换的 CLI 版本信息刷新与可选启动遥测.
  * @param {any} settingsStore 控制台设置
- * @param {any} config 已加载配置(解析统一出口用)
- * @returns {void} 只登记异步任务, 不等待
+ * @param {any} config 出口配置
+ * @returns {() => void} 停止刷新
  */
-function warmCliVersion(settingsStore: any, config: any): void {
-  const cliVersionAuto = settingsStore?.get?.().cliVersionAutoRefresh === true
-  if (!cliVersionAuto) {
-    logger.info('cli fingerprint version kept (auto-refresh disabled)', {
-      version: getCliVersion(),
-    })
-    return
-  }
-  void refreshCliVersion({ config })
-    .then((version) => {
-      logger.info('cli fingerprint version aligned', { version })
-      // 遥测上报(可选):官方 CLI 起进程就会发 app_launched +
-      // fingerprint_generated.我们从不上报 = 服务端眼里一个"只发 chat,
-      // 没有任何客户端生命迹象"的连接.这里按真实时序补上.
-      // 判据与取舍见
-      // .agents/notes/proposed/architecture/2026-09-30-cli-telemetry-reports.md
-      if (settingsStore?.get?.().cliTelemetryEnabled === true) {
+function warmCliVersion(settingsStore: any, config: any): () => void {
+  let launchPending = settingsStore?.get?.()?.cliVersionAutoRefresh === true
+  return startCliVersionRefresh(settingsStore, config, {
+    onRefresh: () => {
+      if (!launchPending) return
+      launchPending = false
+      if (settingsStore?.get?.()?.cliTelemetryEnabled === true) {
         void reportCliLaunch({ fingerprintSuccess: true, config })
           .then((n) => {
             if (n > 0) logger.debug('cli telemetry reported', { records: n })
           })
           .catch(() => {})
       }
-      armVersionSweeper(settingsStore, config)
-    })
-    .catch(() => {})
-}
-
-/**
- * 周期对齐:CLI 版本随官方发版变化,写死一个过时值本身是可用指纹.
- * 每 6h 拉一次 npm latest;版本变了就 warn(一眼看出该跟进官方).
- * 见 .agents/notes/implemented/feature/2026-10-02-cli-fingerprint-periodic-align.md
- * unref:定时器绝不挡进程退出.
- * @param {any} settingsStore 控制台设置
- * @param {any} config 已加载配置(解析统一出口用)
- * @returns {void} 只登记定时器, 不等待
- */
-function armVersionSweeper(settingsStore: any, config: any): void {
-  const versionSweeper = setInterval(() => {
-    if (settingsStore?.get?.().cliVersionAutoRefresh !== true) return
-    const before = getCliVersion()
-    void refreshCliVersion({ config })
-      .then((next) => {
-        if (next && next !== before) {
-          logger.warn('cli fingerprint version changed upstream; realigned', {
-            from: before,
-            to: next,
-          })
-        }
-      })
-      .catch(() => {})
-  }, 6 * 60 * 60 * 1000)
-  if (versionSweeper.unref) versionSweeper.unref()
+    },
+  })
 }
 
 /**
@@ -146,7 +100,7 @@ function logUpstreamAuthReady(ctx: any): void {
  * @returns {void} 只登记异步任务,不等待
  */
 export function startUpstreamWarmup({ ctx, settingsStore }: any) {
-  warmCliVersion(settingsStore, ctx?.config)
+  ctx.stopCliVersionRefresh = warmCliVersion(settingsStore, ctx?.config)
   sweepOrphanSessions(ctx)
   armRefundSweeper(ctx)
   logUpstreamAuthReady(ctx)

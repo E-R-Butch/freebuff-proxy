@@ -17,6 +17,7 @@ import {
   buildUpstreamChannelCard,
 } from './cards.ts'
 import { buildAutoSignInCard } from './switches/auto-signin.ts'
+import { buildCliVersionCard } from './switches/cli-version.ts'
 import { buildEffortOverrideCard } from './inject/effort.ts'
 import { buildOfficialToolsCard } from './inject/official-tools.ts'
 import { buildSystemPromptCard } from './inject/system-prompt.ts'
@@ -44,6 +45,7 @@ export function buildSettingsSections(ctx: any) {
     ]),
     settingsSection('settings.sectionUpstream', 'settings.sectionUpstreamHint', [
       buildUpstreamChannelCard(ctx.channel),
+      buildCliVersionCard(s.cliVersionAutoRefresh === true, ctx.toolsDisabled),
       buildEffortOverrideCard(
         ctx.reasoningOverride, ctx.reasoningModels, ctx.toolsDisabled, ctx.onReasoningOverride,
       ),

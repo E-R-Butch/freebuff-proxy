@@ -2,6 +2,8 @@
 export interface SettingsShape {
   freeToolSignatureEnabled: boolean; cliTelemetryEnabled: boolean; stripToolsOnSchemaRejection: boolean
   toolCarrierEnabled: boolean
+  /** 可选的 npm CLI 版本信息检查. */
+  cliVersionAutoRefresh: boolean
   upstreamChannel: 'legacy' | 'official'; accountSchedulingMode: 'sticky' | 'spread'
   accountMaxConcurrency: number; accountOverflowWaitMs: number; lowBalanceThreshold: number
   blockPremiumModels: boolean; idleReleaseSec?: number; maxNewSessionsPerRequest?: number
@@ -186,6 +188,7 @@ export const LIVE_FIELDS: Record<string, LiveFieldSpec> = {
   toolCarrierEnabled: bool(),
   officialToolNames: stringArray(),
   cliTelemetryEnabled: bool(),
+  cliVersionAutoRefresh: bool(),
   blockPremiumModels: bool(),
   accountMaxConcurrency: intClamped(clampConcurrency, 1),
   accountOverflowWaitMs: intClamped(clampOverflowWait, 0),
@@ -234,6 +237,9 @@ export function applyStoredSettings(base: SettingsShape, raw: any): SettingsShap
   // .agents/notes/implemented/bug-fix/2026-10-01-web-channel-switch-not-persisted.md
   if (typeof raw?.cliTelemetryEnabled === 'boolean') {
     s.cliTelemetryEnabled = raw.cliTelemetryEnabled
+  }
+  if (typeof raw?.cliVersionAutoRefresh === 'boolean') {
+    s.cliVersionAutoRefresh = raw.cliVersionAutoRefresh
   }
   // 官方工具注入名单: 空数组是合法值(一个都不注入), 所以只判是不是数组,
   // 不能用长度判 ---- 用长度判会把[全不注入]读成[未配置], 重启即失效.

@@ -39,6 +39,8 @@ const SUITES = [
   ['config-passthrough', 'suites/entries/verify/config-passthrough.ts'],
   ['rpc-error-body', 'suites/entries/verify/protocol/rpc-error-body.ts'],
   ['multi-session', 'suites/entries/verify/protocol/multi-session.ts'],
+  ['cli-version-refresh', 'suites/entries/verify/protocol/cli-version-refresh.ts'],
+  ['dashboard-version', 'suites/entries/verify/protocol/dashboard-version.ts'],
   ['reasoning-override', 'suites/entries/verify/effort/reasoning-override.ts'],
   ['official-template', 'suites/entries/verify/system/official-template.ts'],
   ['signin', 'suites/entries/verify/signin.ts'],

@@ -24,6 +24,8 @@ const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
   // 生命迹象"的连接.默认关闭:上报等于主动暴露,且端到端尚未验证.
   // 见 .agents/notes/proposed/architecture/2026-09-30-cli-telemetry-reports.md
   cliTelemetryEnabled: false,
+  // npm CLI 版本信息的可选刷新.
+  cliVersionAutoRefresh: false,
   // 上游以 404 "No endpoints found" 拒掉带工具的请求时,是否去掉 tools 重发一次.
   // 默认保留工具语义:上游拒绝就返回错误,不把 agent 请求伪装成成功的纯文本回答.
   // 明确开启时仍可回退到纯文本.见
@@ -97,6 +99,7 @@ const DEFAULT_SETTINGS: Readonly<Settings> = Object.freeze({
 export class SettingsStore {
   declare file: string; declare settings: Settings
   declare loadStatus: 'ok' | 'missing' | 'invalid'; declare loadReason: string | null
+  private listeners = new Set<() => void>()
 
   /** @param {string} file e.g. /data/settings.json */
   constructor(file: string) {
@@ -130,6 +133,16 @@ export class SettingsStore {
 
   get() {
     return { ...this.settings }
+  }
+
+  /**
+   * 订阅成功保存后的设置变更.
+   * @param {() => void} listener 变更回调
+   * @returns {() => void} 取消订阅
+   */
+  subscribe(listener: () => void): () => void {
+    this.listeners.add(listener)
+    return () => { this.listeners.delete(listener) }
   }
 
   /**
@@ -176,6 +189,7 @@ export class SettingsStore {
     fs.writeFileSync(tmp, JSON.stringify({ version: 1, ...settings }, null, 2), { mode: 0o600 })
     fs.renameSync(tmp, this.file)
     this.settings = settings
+    for (const listener of this.listeners) listener()
     return this.get()
   }
 }
