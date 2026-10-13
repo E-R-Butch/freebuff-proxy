@@ -72,10 +72,10 @@ chat 上多发这个头 —— 属于"客户端没有的特征",一并删掉.
 | `GET /models` | `x-freebuff-catalog-protocol: 1`,`x-freebuff-client: desktop` |
 | `POST /device-keys` | `Content-Type: application/json`(body 只有 publicKey + client) |
 | `GET /session` | `x-fb-timezone`,`x-freebuff-catalog-fetch`,`-catalog-protocol: 1`,`-client: desktop`,设备签名三头,`-first-tab-discount: 0`,`-include-unused-rate-limits: 1`,`-install-id`,`-multi-session: 1`,可选 `-instance-id` |
-| `POST /session/admission` | 上述全部 + `x-freebuff-model`(**handle**),`-wallet-spend-limit: 0`,`-desktop-attempt-id`,`-instance-id`,`-purchase-continuity: 1`,可选 `-takeover-instance-id` |
+| `POST /session/admission` | 上述全部 + `x-freebuff-model`(**handle**),`-wallet-spend-limit: session`,`-desktop-attempt-id`,`-instance-id`,`-purchase-continuity: 1`,可选 `-takeover-instance-id` |
 | `DELETE /session` | `-catalog-protocol: 1`,`-catalog-fetch`,`-instance-id`,`-multi-session: 1`,`-purchase-continuity: 1` + 签名三头 |
 | `POST /agent-runs` | `authorization`,`content-type`,`acting-user-id`(**仅 3 个**) |
-| `POST /chat/completions` | `authorization`,`content-type`,三段 UA,`acting-user-id`,`x-freebuff-catalog-fetch` + 签名三头(**共 8 个,无 catalog-protocol**) |
+| `POST /chat/completions` | `authorization`,三段 UA,`x-freebuff-sse-gzip-recovery: 1`,`acting-user-id`,`x-freebuff-catalog-fetch` + 签名三头(无 catalog-protocol;BYOK 另带 `x-openrouter-api-key`,本仓不实现 BYOK) |
 
 ## 20.6 待办(本次实施)
 

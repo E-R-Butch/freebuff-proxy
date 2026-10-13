@@ -22,7 +22,7 @@ DELETE /api/v1/freebuff/session/attempt      # 释放（带 attemptId 时）
   "x-freebuff-client":           "desktop",
   "x-freebuff-install-id":       installId,
   "x-freebuff-model":            catalog.handleFor(model),   //  handle，不是 key
-  "x-freebuff-wallet-spend-limit": "0",
+  "x-freebuff-wallet-spend-limit": "session",   // 旧抓包为 "0";当前发布版发字符串 "session"
   "x-freebuff-first-tab-discount": "0",
   "x-freebuff-instance-id":      instanceId,
   "x-freebuff-purchase-continuity": "1",

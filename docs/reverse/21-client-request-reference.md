@@ -142,7 +142,7 @@ x-freebuff-desktop-attempt-id: <uuid>      ← 每次购买尝试独立生成
 x-freebuff-instance-id: <裸 uuid>          ← 整场复用，同一值
 x-freebuff-model: <fbm1.句柄>              ←  必须是句柄，不是模型名/key
 x-freebuff-purchase-continuity: 1
-x-freebuff-wallet-spend-limit: 0
+x-freebuff-wallet-spend-limit: session    ← 旧抓包为 0;当前发布版发字符串 session
 ```
 
 ### ⑤ DELETE /api/v1/freebuff/session（**带签名**）

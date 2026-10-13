@@ -144,8 +144,10 @@ system 开场白,官方签名工具,`base3-free-catalog`,客户端环境描述�
 
 - 头名:`X-Freebuff-Cli-Fingerprint`(抓包实测;全仓代码里**没有**该头的构造点,
   属于"历史观测"而非本仓契约);
-- 版本真值:`src/upstream/official-fingerprint.ts:30` 的 `KNOWN_CLI_VERSION`(当前 `'0.0.178'`,
-  且运行时会被 `refreshCliVersion()` 刷新)。
+- 版本真值:`src/upstream/fingerprint/ua.ts` 的 `KNOWN_CLI_VERSION`(当前离线值 `'0.2.27'`,
+  取自官方发布包:包内 `CODEBUFF_CLI_VERSION` 与下载路径 `/api/releases/download/<v>/` 一致,
+  且 npm `freebuff@latest` 同版;运行时会被 `refreshCliVersion()` 刷新).
+  会话请求把该值放进 `x-freebuff-client-version` 头(官方由 `CODEBUFF_CLI_VERSION` 填).
    已淘汰的那份逆向总结写的 `0.2.12` **是错的** —— 它连头名拼写(`X-Freebuff-Device-Signature`
   等)一起错,这就是它被淘汰的原因。
 

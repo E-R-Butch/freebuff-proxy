@@ -76,6 +76,10 @@
 | `x-freebuff-purchase-continuity` | `1` |
 | `x-freebuff-wallet-spend-limit` | `0` |
 
+> 后记(2026-10-13):上表的 `0` 是本次抓包(旧客户端)的真值. 当前发布版(0.2.27)
+> 同一格发的是字符串 `session`,反代已随之更新;
+> 差异与验证见 `.agents/notes/implemented/bug-fix/2026-10-13-session-wallet-spend-limit.md`.
+
 **我们的(当前 `upstream.mjs:246-262`)**:
 
 | 头 | 官方 | 我们 | 严重度 | 说明 |
